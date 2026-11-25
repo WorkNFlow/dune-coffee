@@ -29,37 +29,27 @@ describe('computeScrollyVals', () => {
   test('selects stage 01 at p=0.17 (manual override takes precedence over scrollP)', () => {
     const vals = computeScrollyVals(1, 0.17);
     assert.equal(vals.stage.num, '01');
-    assert.equal(vals.stage.title, 'Чашка');
+    assert.equal(vals.stage.title, 'Первый налив');
     assert.equal(vals.steps[0].active, true);
     assert.equal(vals.steps[1].active, false);
     assert.equal(vals.steps[2].active, false);
-    assert.equal(vals.mugO, 0.5);
-    assert.equal(vals.cofO, 0);
+    assert.equal(vals.frameIndex, 32);
   });
 
   test('selects stage 02 at p=0.5', () => {
     const vals = computeScrollyVals(0.5, null);
     assert.equal(vals.stage.num, '02');
-    assert.equal(vals.stage.title, 'Экстракция');
+    assert.equal(vals.stage.title, 'Наполнение');
     assert.equal(vals.steps[1].active, true);
-    assert.equal(vals.mugO, 1);
-    assert.equal(vals.mugY, 0);
-    assert.ok(vals.cofO > 0.48 && vals.cofO < 0.49);
+    assert.equal(vals.frameIndex, 94);
   });
 
-  test('selects stage 03 at p=1 with full steam and heat rings', () => {
+  test('selects stage 03 at p=1 with final frame', () => {
     const vals = computeScrollyVals(1, null);
     assert.equal(vals.stage.num, '03');
-    assert.equal(vals.stage.title, 'Тепло');
+    assert.equal(vals.stage.title, 'Тепло и пар');
     assert.equal(vals.steps[2].active, true);
-    assert.equal(vals.ringLit, 60);
-    assert.equal(vals.rimO, 0.8);
-    assert.equal(vals.h1, 0.38);
-    assert.equal(vals.h2, 0.26);
-    assert.equal(vals.h3, 0.16);
-    assert.equal(vals.sA, 0);
-    assert.equal(vals.sB, 0);
-    assert.equal(vals.sC, 0);
+    assert.equal(vals.frameIndex, 187);
   });
 });
 

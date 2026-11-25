@@ -19,21 +19,8 @@ export interface StepItem {
 export interface ScrollyVals {
   stage: StageInfo;
   steps: StepItem[];
-  ringLit: number;
-  mugO: number;
-  mugY: number;
-  rimO: number;
-  cofO: number;
-  cofS: number;
-  drpO: number;
-  drpY: number;
-  strO: number;
-  h1: number;
-  h2: number;
-  h3: number;
-  sA: number;
-  sB: number;
-  sC: number;
+  frameIndex: number;
+  progress: number;
 }
 
 export interface MenuRawItem {
@@ -75,26 +62,28 @@ export interface LocationCardView {
   booth: string;
 }
 
+export const TOTAL_FRAMES = 188;
+
 export const STAGES: StageInfo[] = [
   {
     num: '01',
-    title: 'Чашка',
-    text: 'Тяжёлая керамика держит тепло и ложится в руку. Основа спокойной рабочей сессии.',
+    title: 'Первый налив',
+    text: 'Ровная струя горячего кофе касается толстого стекла. Чистый старт без суеты и лишнего шума.',
   },
   {
     num: '02',
-    title: 'Экстракция',
-    text: 'Фильтр медленно пропускает воду через молотый кофе. Чистый вкус без осадка и спешки.',
+    title: 'Наполнение',
+    text: 'Напиток мягко поднимается в стакане, собирая плотную золотистую пенку и ровную текстуру.',
   },
   {
     num: '03',
-    title: 'Тепло',
-    text: 'Горячая чашка, которую можно пить не торопясь. Второй стакан фильтра в тот же день — 140 ₽.',
+    title: 'Тепло и пар',
+    text: 'Свежий кофе готов к спокойной рабочей сессии. Второй стакан фильтра в тот же день — 140 ₽.',
   },
 ];
 
 export const STEP_CENTERS: number[] = [0.17, 0.5, 0.84];
-export const STEP_LABELS: string[] = ['Чашка', 'Экстракция', 'Тепло'];
+export const STEP_LABELS: string[] = ['Налив', 'Баланс', 'Тепло'];
 
 export const MENU: Record<MenuCategoryKey, MenuRawItem[]> = {
   coffee: [
@@ -249,7 +238,7 @@ export function computeScrollProgress(rectTop: number, rectHeight: number, viewp
 }
 
 export function computeScrollyVals(scrollP: number, manualP: number | null): ScrollyVals {
-  const p = manualP !== null && manualP !== undefined ? manualP : scrollP;
+  const p = clamp01(manualP !== null && manualP !== undefined ? manualP : scrollP);
   const p1 = clamp01(p / 0.34);
   const p2 = clamp01((p - 0.34) / 0.33);
   const p3 = clamp01((p - 0.67) / 0.33);
@@ -266,24 +255,13 @@ export function computeScrollyVals(scrollP: number, manualP: number | null): Scr
     center: STEP_CENTERS[i],
   }));
 
+  const frameIndex = Math.min(TOTAL_FRAMES - 1, Math.max(0, Math.round(p * (TOTAL_FRAMES - 1))));
+
   return {
     stage: STAGES[idx],
     steps,
-    ringLit: round3(p * 60),
-    mugO: round3(p1),
-    mugY: round3((1 - p1) * 36),
-    rimO: round3(0.8 * p3),
-    cofO: round3(p2),
-    cofS: round3(0.2 + 0.8 * p2),
-    drpO: round3(p2 * (1 - clamp01(p3 * 3))),
-    drpY: round3(-(1 - p2) * 24),
-    strO: round3(1 - clamp01(p2 * 1.6)),
-    h1: round3(0.38 * clamp01(p3 * 3)),
-    h2: round3(0.26 * clamp01(p3 * 3 - 1)),
-    h3: round3(0.16 * clamp01(p3 * 3 - 2)),
-    sA: round3(1 - clamp01(p3 / 0.8)),
-    sB: round3(1 - clamp01((p3 - 0.1) / 0.8)),
-    sC: round3(1 - clamp01((p3 - 0.2) / 0.8)),
+    frameIndex,
+    progress: round3(p),
   };
 }
 
