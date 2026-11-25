@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="120 356 784 306" fill="none" stroke="#C8A97E" stroke-width="14" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Cup rim -->
+  <ellipse cx="512.5" cy="402" rx="159.5" ry="26" />
+  <!-- Cup left wall -->
+  <path d="M 353 402 C 351 440, 355 478, 366 508" />
+  <!-- Cup right wall -->
+  <path d="M 672 402 C 674 475, 652 548, 592 594" />
+  <!-- Cup handle -->
+  <path d="M 673 422 C 708 410, 730 432, 723 458 C 716 482, 692 496, 665 500" />
+  <!-- Foreground sand dune -->
+  <path d="M 136 646 C 225 632, 325 501, 403 501 C 475 501, 575 628, 765 646" />
+  <!-- Background right sand dune -->
+  <path d="M 648 530 C 715 538, 785 625, 888 646" />
+  <!-- Horizontal baseline -->
+  <path d="M 136 646 H 888" />
+</svg>
