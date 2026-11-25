@@ -14,7 +14,19 @@ export function LocationsSection() {
         <h2 className="h2" style={{ marginTop: '16px', maxWidth: '14em' }}>
           Пять кофеен в Калининграде и одна на подходе
         </h2>
-        <div className="bento" style={{ marginTop: '40px' }}>
+        <p
+          style={{
+            marginTop: '20px',
+            marginBottom: 0,
+            textAlign: 'right',
+            fontSize: '13px',
+            lineHeight: 1.5,
+            color: '#9C948B',
+          }}
+        >
+          *бронь кабинок для созвонов идет на один час
+        </p>
+        <div className="bento" style={{ marginTop: '16px' }}>
           {locs.map((c) => (
             <article
               key={c.n}

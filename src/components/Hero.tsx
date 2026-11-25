@@ -1,4 +1,70 @@
+import { useEffect, useRef, useState } from 'react';
+import { motion, useReducedMotion, useScroll, useTransform, type MotionValue } from 'motion/react';
+
+const DUNE_PATHS = [
+  { d: 'M-20 44 C 260 4, 520 70, 760 28 S 1180 -8, 1460 40', opacity: 0.1 },
+  { d: 'M-20 62 C 240 22, 540 90, 780 50 S 1160 14, 1460 60', opacity: 0.14 },
+  { d: 'M-20 94 C 280 40, 500 118, 740 72 S 1200 28, 1460 86', opacity: 0.18 },
+  { d: 'M-20 112 C 220 74, 560 138, 800 94 S 1140 62, 1460 108', opacity: 0.22 },
+  { d: 'M-20 146 C 300 92, 480 166, 720 122 S 1220 84, 1460 132', opacity: 0.26 },
+  { d: 'M-20 164 C 260 124, 540 190, 780 148 S 1160 112, 1460 156', opacity: 0.3 },
+  { d: 'M-20 192 C 240 148, 520 214, 760 174 S 1200 136, 1460 184', opacity: 0.34 },
+  { d: 'M-20 216 C 280 180, 500 240, 740 200 S 1180 166, 1460 208', opacity: 0.4 },
+  { d: 'M-20 242 C 260 208, 540 268, 780 226 S 1160 194, 1460 234', opacity: 0.46 },
+] as const;
+
+const SPREAD_STEP_PX = 8;
+
+function DuneContourLine({
+  d,
+  opacity,
+  offsetFactor,
+  scrollY,
+  maxScroll,
+  prefersReducedMotion,
+}: {
+  d: string;
+  opacity: number;
+  offsetFactor: number;
+  scrollY: MotionValue<number>;
+  maxScroll: number;
+  prefersReducedMotion: boolean | null;
+}) {
+  const y = useTransform(
+    scrollY,
+    [0, maxScroll],
+    [0, prefersReducedMotion ? 0 : offsetFactor * SPREAD_STEP_PX]
+  );
+
+  return (
+    <motion.path
+      d={d}
+      strokeOpacity={opacity}
+      vectorEffect="non-scaling-stroke"
+      style={{ y }}
+    />
+  );
+}
+
 export function Hero() {
+  const linesRef = useRef<HTMLDivElement | null>(null);
+  const [maxScroll, setMaxScroll] = useState(760);
+  const prefersReducedMotion = useReducedMotion();
+  const { scrollY } = useScroll();
+
+  useEffect(() => {
+    const updateMaxScroll = () => {
+      const el = linesRef.current;
+      if (!el) return;
+      const bottomOffset = el.getBoundingClientRect().bottom + window.scrollY;
+      setMaxScroll(Math.max(Math.round(bottomOffset), 1));
+    };
+
+    updateMaxScroll();
+    window.addEventListener('resize', updateMaxScroll, { passive: true });
+    return () => window.removeEventListener('resize', updateMaxScroll);
+  }, []);
+
   return (
     <section id="concept" style={{ position: 'relative' }}>
       <div className="wrap hero-pad" style={{ paddingTop: '104px' }}>
@@ -127,24 +193,35 @@ export function Hero() {
       </div>
 
       {/* dune contour band */}
-      <div aria-hidden="true" style={{ marginTop: '56px', height: '260px', overflow: 'hidden' }}>
+      <div
+        ref={linesRef}
+        aria-hidden="true"
+        style={{
+          marginTop: '20px',
+          paddingTop: '8px',
+          height: '324px',
+          overflow: 'hidden',
+        }}
+      >
         <svg
           viewBox="0 0 1440 260"
-          preserveAspectRatio="xMidYMid slice"
-          style={{ display: 'block', width: '100%', height: '100%' }}
+          preserveAspectRatio="none"
+          style={{ display: 'block', width: '100%', height: '260px', overflow: 'visible' }}
           fill="none"
           stroke="#C8A97E"
           strokeWidth="1"
         >
-          <path d="M-20 44 C 260 4, 520 70, 760 28 S 1180 -8, 1460 40" strokeOpacity=".10"></path>
-          <path d="M-20 62 C 240 22, 540 90, 780 50 S 1160 14, 1460 60" strokeOpacity=".14"></path>
-          <path d="M-20 94 C 280 40, 500 118, 740 72 S 1200 28, 1460 86" strokeOpacity=".18"></path>
-          <path d="M-20 112 C 220 74, 560 138, 800 94 S 1140 62, 1460 108" strokeOpacity=".22"></path>
-          <path d="M-20 146 C 300 92, 480 166, 720 122 S 1220 84, 1460 132" strokeOpacity=".26"></path>
-          <path d="M-20 164 C 260 124, 540 190, 780 148 S 1160 112, 1460 156" strokeOpacity=".30"></path>
-          <path d="M-20 192 C 240 148, 520 214, 760 174 S 1200 136, 1460 184" strokeOpacity=".34"></path>
-          <path d="M-20 216 C 280 180, 500 240, 740 200 S 1180 166, 1460 208" strokeOpacity=".40"></path>
-          <path d="M-20 242 C 260 208, 540 268, 780 226 S 1160 194, 1460 234" strokeOpacity=".46"></path>
+          {DUNE_PATHS.map((line, index) => (
+            <DuneContourLine
+              key={line.d}
+              d={line.d}
+              opacity={line.opacity}
+              offsetFactor={index}
+              scrollY={scrollY}
+              maxScroll={maxScroll}
+              prefersReducedMotion={prefersReducedMotion}
+            />
+          ))}
         </svg>
       </div>
 
